@@ -21,31 +21,47 @@ class keyregister extends _dao {
 	protected $template = __NAMESPACE__ . '\dto\keyregister';
 
 	public function import() {
-		$path = sprintf('%s/resource/data.csv', dirname(__DIR__));
-		\sys::logger(sprintf('<%s> %s', $path, __METHOD__));
+		$path = implode(
+			DIRECTORY_SEPARATOR,
+			[
+				config::cmsStore(),
+				'default-keyregister.csv'
 
-		$csv = new ParseCsv\Csv;
-		$csv->auto($path);
-		set_time_limit(300);
+			]
 
-		\sys::logger(sprintf('<%s> %s', $csv->getTotalDataRowCount(), __METHOD__));
-		foreach ($csv->data as $t) {
-			if ($t['properties_id']) {
-				$a = [
-					'keyset' => $t['keyset'],
-					'properties_id' => $t['properties_id'],
-					'updated' => \db::dbTimeStamp(),
-					'created' => \db::dbTimeStamp()
+		);
 
-				];
+		if ( file_exists( $path)) {
+			$csv = new ParseCsv\Csv;
+			$csv->auto($path);
+			set_time_limit(300);
 
-				$a['keyset_type'] = config::keyset_management;
-				$this->Insert($a);
+			\sys::logger(sprintf('<%s> %s', $csv->getTotalDataRowCount(), __METHOD__));
+			foreach ($csv->data as $t) {
+				if ($t['properties_id']) {
+					$a = [
+						'keyset' => $t['keyset'],
+						'properties_id' => $t['properties_id'],
+						'updated' => \db::dbTimeStamp(),
+						'created' => \db::dbTimeStamp()
 
-				$a['keyset_type'] = config::keyset_tenant;
-				$this->Insert($a);
+					];
+
+					$a['keyset_type'] = config::keyset_management;
+					$this->Insert($a);
+
+					$a['keyset_type'] = config::keyset_tenant;
+					$this->Insert($a);
+				}
 			}
+
 		}
+		else {
+			\sys::logger( sprintf('<missing import file> %s', $path, __METHOD__));
+			\sys::logger( sprintf('<%s> %s', $path, __METHOD__));
+
+		}
+
 	}
 
 	public function getByKeySet(string $key) {
@@ -269,9 +285,7 @@ class keyregister extends _dao {
 	public function reset() {
 		$this->Q('DROP TABLE IF EXISTS `keyregister`');
 		$this->Q('DROP TABLE IF EXISTS `keyregister_log`');
-		if (file_exists($f = config::keyregister_config())) {
-			unlink($f);
-		}
+		config::keyregister_version_reset();
 
 		$dir = config::keyregister_Path();
 		$files = new RecursiveIteratorIterator(
@@ -279,10 +293,14 @@ class keyregister extends _dao {
 			RecursiveIteratorIterator::CHILD_FIRST
 		);
 
+		config::keyregister_checkdatabase();
+		$configFile = config::keyregister_config();
 		foreach ($files as $fileinfo) {
+
+			if ($fileinfo->getRealPath() == $configFile) continue;
+
 			$todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
 			$todo($fileinfo->getRealPath());
-			// \sys::logger( sprintf('<%s(%s)> %s', $todo, $fileinfo->getRealPath(), __METHOD__));
 
 		}
 

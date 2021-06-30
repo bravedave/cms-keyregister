@@ -22,6 +22,7 @@ class controller extends \Controller {
   protected $viewPath = __DIR__ . '/views/';
 
   protected function _index() {
+
     $dao = new dao\keyregister;
     $this->data = (object)[
       'title' => $this->title = config::label,
@@ -232,34 +233,7 @@ class controller extends \Controller {
       } else {
         Json::nak($action .  ' -  missing id');
       }
-    } elseif ('import-default-dataset' == $action) {
-      $dao = new dao\keyregister;
-      $dao->import();
-      Json::ack($action);
-    } elseif ('reset' == $action && currentUser::isDavid()) {
-      /*
-        (_ => {
-          _.post({
-            url: _.url('keyregister'),
-            data: { action: 'reset' },
 
-          }).then(d => {
-            if ('ack' == d.response) {
-              _.nav('keyregister');
-
-            } else {
-              _.growl(d);
-
-            }
-
-          });
-
-        })( _brayworth_)
-
-       */
-      $dao = new dao\keyregister;
-      $dao->reset();
-      Json::ack($action);
     } elseif ('rotate-image-right' == $action || 'rotate-image-left' == $action) {
       $id = (int)$this->getPost('id');
       if ($id = (int)$this->getPost('id')) {

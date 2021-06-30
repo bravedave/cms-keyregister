@@ -32,6 +32,9 @@
     "matthiasmullie/scrapbook": "*"
   },
   "scripts": {
+    "import-defaultset": [
+      "cms\\keyregister\\utility::import"
+    ],
     "post-update-cmd": [
       "cms\\keyregister\\utility::upgrade",
       "cms\\keyregister\\utility::upgrade_dev"

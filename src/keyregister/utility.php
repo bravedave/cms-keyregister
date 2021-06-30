@@ -16,6 +16,17 @@ use dvc\service;
 use green;
 
 class utility extends service {
+  protected function _import() {
+    $dao = new dao\keyregister;
+    $dao->reset();
+    $dao->import();
+  }
+
+  protected function _reset() {
+    $dao = new dao\keyregister;
+    $dao->reset();
+  }
+
   protected function _upgrade() {
     config::route_register(config::$KEYCHECKOUT, 'cms\\keyregister\\keycheckout');
     config::route_register('keyregister', 'cms\\keyregister\\controller');
@@ -52,6 +63,16 @@ class utility extends service {
     // config::route_register('sms', 'sms\\controller');
 
     echo (sprintf('%s : %s%s', 'updated (dev)', __METHOD__, PHP_EOL));
+  }
+
+  static function import() {
+    $app = new self(application::startDir());
+    $app->_import();
+  }
+
+  static function reset() {
+    $app = new self(application::startDir());
+    $app->_reset();
   }
 
   static function upgrade() {

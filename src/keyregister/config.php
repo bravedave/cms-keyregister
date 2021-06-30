@@ -112,6 +112,11 @@ class config extends \config {
 
   }
 
+  static function keyregister_version_reset() {
+    self::keyregister_version(self::$_KEYREGISTER_VERSION = 0);
+
+  }
+
   static protected function keyregister_version($set = null) {
     $ret = self::$_KEYREGISTER_VERSION;
 
