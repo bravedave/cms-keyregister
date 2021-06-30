@@ -1,6 +1,6 @@
 {
-  "name": "bravedave/mvp",
-  "description": "Minimum Viable Product",
+  "name": "bravedave/cms-keyregister",
+  "description": "CMS Key Register Module",
   "minimum-stability": "dev",
   "prefer-stable": true,
   "license": "MIT",
