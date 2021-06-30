@@ -2,6 +2,7 @@
   "name": "bravedave/mvp",
   "description": "Minimum Viable Product",
   "minimum-stability": "dev",
+  "prefer-stable": true,
   "license": "MIT",
   "authors": [
     {
@@ -9,9 +10,41 @@
       "email": "david@brayworth.com.au"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "cms\\keyregister\\": "src/keyregister/"
+    }
+  },
   "autoload-dev": {
     "psr-4": {
-      "": "src/app/"
+      "": "src/dev/app/"
+    }
+  },
+  "require": {
+    "bravedave/dvc": "*",
+    "bravedave/green": "*",
+    "parsecsv/php-parsecsv": "^1.3",
+    "bravedave/cms-console": "*",
+    "bacon/bacon-qr-code": "*"
+  },
+  "require-dev": {
+    "ext-apcu": "*",
+    "matthiasmullie/scrapbook": "*"
+  },
+  "scripts": {
+    "post-update-cmd": [
+      "cms\\keyregister\\utility::upgrade",
+      "cms\\keyregister\\utility::upgrade_dev"
+    ]
+  },
+  "repositories": {
+    "cms-leasing": {
+      "type": "git",
+      "url": "https://github.com/bravedave/cms-leasing"
+    },
+    "cms-console": {
+      "type": "git",
+      "url": "https://github.com/bravedave/cms-console"
     }
   }
 }
