@@ -54,7 +54,7 @@ class controller extends \Controller {
   protected function posthandler() {
     $action = $this->getPost('action');
 
-    sys::logger(sprintf('<%s> %s', $action, __METHOD__));
+    // sys::logger(sprintf('<%s> %s', $action, __METHOD__));
 
     if ('key-delete' == $action) {
       $id = (int)$this->getPost('id');
