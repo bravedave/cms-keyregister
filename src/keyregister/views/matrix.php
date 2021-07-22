@@ -38,7 +38,6 @@ use strings;  ?>
     <thead class="small">
       <tr>
         <td class="text-center text-muted border-right" style="width: 50px;" line-number></td>
-        <td class="d-none d-md-table-cell text-center">uid</td>
         <td>keyset</td>
         <td class="text-center" id="<?= $_filterType = strings::rand() ?>">type</td>
         <td>address</td>
@@ -56,7 +55,6 @@ use strings;  ?>
       <?php while ($dto = $this->data->res->dto()) { ?>
         <tr data-id="<?= $dto->id ?>" data-properties_id="<?= $dto->properties_id ?>" data-address_street="<?= htmlentities($dto->address_street) ?>" data-people_id="<?= $dto->people_id ?>" data-name="<?= htmlentities($dto->name) ?>" data-mobile="<?= $dto->mobile ?>" data-keyset_type="<?= $dto->keyset_type ?>" data-pm="<?= strings::initials($dto->pm) ?>">
           <td class="small text-center text-muted border-right" line-number></td>
-          <td class="d-none d-md-table-cell text-center"><?= $dto->id ?></td>
           <td><?= $dto->keyset ?></td>
           <td class="text-center"><?= config::keyset_abbreviation($dto->keyset_type) ?></td>
           <td>

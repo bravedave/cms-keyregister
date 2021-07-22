@@ -172,11 +172,16 @@ class controller extends \Controller {
         $dao->UpdateByID($a, $id);
       } else {
         $a['created'] = $a['updated'];
+
+        $a['keyset_type'] = config::keyset_management;
         $id = $dao->Insert($a);
+
+        $a['keyset_type'] = config::keyset_tenant;
+        $dao->Insert($a);
       }
 
       Json::ack($action)
-        ->add('id', $id);
+        ->add('id', $id); // return id of management set
     } elseif ('get-keys-for-person' == $action) {
       /*
         (_ => {

@@ -42,35 +42,37 @@ $dto = $this->data->dto;  ?>
 
           </div>
 
-          <div class="form-row mb-2">
-            <div class="col-2 col-md-3 col-form-label text-truncate">type</div>
-            <div class="col">
-              <select class="form-control" name="keyset_type" required>
-                <option value="">select type</option>
-                <?php
-                printf(
-                  '<option value="%s" %s>%s</option>',
-                  config::keyset_management,
-                  config::keyset_management == $dto->keyset_type ? 'selected' : '',
-                  config::keyset_management_label
+          <?php if ($dto->id > 0) {  ?>
+            <div class="form-row mb-2">
+              <div class="col-2 col-md-3 col-form-label text-truncate">type</div>
+              <div class="col">
+                <select class="form-control" name="keyset_type" required>
+                  <option value="">select type</option>
+                  <?php
+                  printf(
+                    '<option value="%s" %s>%s</option>',
+                    config::keyset_management,
+                    config::keyset_management == $dto->keyset_type ? 'selected' : '',
+                    config::keyset_management_label
 
-                );
+                  );
 
-                printf(
-                  '<option value="%s" %s>%s</option>',
-                  config::keyset_tenant,
-                  config::keyset_tenant == $dto->keyset_type ? 'selected' : '',
-                  config::keyset_tenant_label
+                  printf(
+                    '<option value="%s" %s>%s</option>',
+                    config::keyset_tenant,
+                    config::keyset_tenant == $dto->keyset_type ? 'selected' : '',
+                    config::keyset_tenant_label
 
-                );
+                  );
 
-                ?>
+                  ?>
 
-              </select>
+                </select>
+
+              </div>
 
             </div>
-
-          </div>
+          <?php }  ?>
 
           <div class="form-row mb-2">
             <div class="col-2 col-md-3 col-form-label text-truncate">location</div>
@@ -105,21 +107,23 @@ $dto = $this->data->dto;  ?>
                     })
                     .trigger('reconcile');
 
-                  $('#<?= $_uid ?>tenant').on('click', function(e) {
-                    e.stopPropagation();
-                    e.preventDefault();
+                  $('#<?= $_uid ?>tenant')
+                    .on('click', function(e) {
+                      e.stopPropagation();
+                      e.preventDefault();
 
-                    $('#<?= $_uid ?>').val('tenant').focus().select();
+                      $('#<?= $_uid ?>').val('tenant').focus().select();
 
-                  });
+                    });
 
-                  $('#<?= $_uid ?>clear').on('click', function(e) {
-                    e.stopPropagation();
-                    e.preventDefault();
+                  $('#<?= $_uid ?>clear')
+                    .on('click', function(e) {
+                      e.stopPropagation();
+                      e.preventDefault();
 
-                    $('#<?= $_uid ?>').val('').focus();
+                      $('#<?= $_uid ?>').val('').focus();
 
-                  });
+                    });
 
                 }))(_brayworth_);
               </script>
@@ -191,95 +195,70 @@ $dto = $this->data->dto;  ?>
   </div>
 
   <script>
-    (_ => $('#<?= $_modal ?>').on('shown.bs.modal', () => {
-
-      $('#<?= $_form ?>')
-        .on('submit', function(e) {
-          let _form = $(this);
-          let _data = _form.serializeFormJSON();
-
-          _.post({
-            url: _.url('<?= $this->route ?>'),
-            data: _data,
-
-          }).then(d => {
-            if ('ack' == d.response) {
-              $('#<?= $_modal ?>').trigger('success', d);
-
-            } else {
-              _.growl(d);
-
-            }
-
-            $('#<?= $_modal ?>').modal('hide');
-
-          });
-
-          return false;
-
-        });
-
-      $('#<?= $_form ?> textarea[name="description"]').autoResize();
-      $('#<?= $_form ?> input[name="keyset"]').focus();
-      $('#<?= $_form ?> input[name="address_street"]')
-        .autofill({
-          autoFocus: true,
-          source: (request, response) => {
-            _.post({
-              url: _.url('properties'),
-              data: {
-                action: 'search-properties',
-                term: request.term
-
-              },
-
-            }).then(d => response('ack' == d.response ? d.data : []));
-
-          },
-          select: (e, ui) => {
-            let o = ui.item;
-            if (o.id > 0) {
-              $('#<?= $_form ?> input[name="properties_id"]').val(o.id);
-
-            }
-
-          }
-
-        });
-
-      <?php if ($dto->id > 0) {  ?>
-        let rotate = (id, cmd) => {
-          _.post({
-            url: _.url('<?= $this->route ?>'),
-            data: {
-              action: cmd,
-              id: id
-
-            },
-
-          }).then(d => {
-            if ('ack' == d.response) {
-              $('#<?= $_img ?>').trigger('refresh');
-
-            } else {
-              _.growl(d);
-
-            }
-
-          });
-
-        };
+    (_ => $('#<?= $_modal ?>')
+      .on('shown.bs.modal', () => {
 
         $('#<?= $_form ?>')
-          .on('delete-image', function(e) {
+          .on('submit', function(e) {
             let _form = $(this);
             let _data = _form.serializeFormJSON();
 
             _.post({
               url: _.url('<?= $this->route ?>'),
+              data: _data,
+
+            }).then(d => {
+              if ('ack' == d.response) {
+                $('#<?= $_modal ?>').trigger('success', d);
+
+              } else {
+                _.growl(d);
+
+              }
+
+              $('#<?= $_modal ?>').modal('hide');
+
+            });
+
+            return false;
+
+          });
+
+        $('#<?= $_form ?> textarea[name="description"]').autoResize();
+        $('#<?= $_form ?> input[name="keyset"]').focus();
+        $('#<?= $_form ?> input[name="address_street"]')
+          .autofill({
+            autoFocus: true,
+            source: (request, response) => {
+              _.post({
+                url: _.url('properties'),
+                data: {
+                  action: 'search-properties',
+                  term: request.term
+
+                },
+
+              }).then(d => response('ack' == d.response ? d.data : []));
+
+            },
+            select: (e, ui) => {
+              let o = ui.item;
+              if (o.id > 0) {
+                $('#<?= $_form ?> input[name="properties_id"]').val(o.id);
+
+              }
+
+            }
+
+          });
+
+        <?php if ($dto->id > 0) {  ?>
+          let rotate = (id, cmd) => {
+            _.post({
+              url: _.url('<?= $this->route ?>'),
               data: {
-                action: 'key-remove-image',
-                id: _data.id
+                action: cmd,
+                id: id
 
               },
 
@@ -294,156 +273,183 @@ $dto = $this->data->dto;  ?>
 
             });
 
-          })
-          .on('rotate-image-left', function(e) {
-            let _form = $(this);
-            let _data = _form.serializeFormJSON();
+          };
 
-            rotate(_data.id, 'rotate-image-left');
+          $('#<?= $_form ?>')
+            .on('delete-image', function(e) {
+              let _form = $(this);
+              let _data = _form.serializeFormJSON();
 
-          })
-          .on('rotate-image-right', function(e) {
-            let _form = $(this);
-            let _data = _form.serializeFormJSON();
+              _.post({
+                url: _.url('<?= $this->route ?>'),
+                data: {
+                  action: 'key-remove-image',
+                  id: _data.id
 
-            rotate(_data.id, 'rotate-image-right');
+                },
 
-          })
-          .on('view-pdf', function(e) {
-            let _form = $(this);
-            let _data = _form.serializeFormJSON();
+              }).then(d => {
+                if ('ack' == d.response) {
+                  $('#<?= $_img ?>').trigger('refresh');
 
-            window.open(_.url('<?= $this->route ?>/pdfof/' + _data.id));
+                } else {
+                  _.growl(d);
 
-          });
+                }
 
-        $('#<?= $_img ?>')
-          .on(_.browser.isMobileDevice ? 'click' : 'contextmenu', function(e) {
-            if (e.shiftKey)
-              return;
+              });
 
-            e.stopPropagation();
-            e.preventDefault();
-            _.hideContexts();
+            })
+            .on('rotate-image-left', function(e) {
+              let _form = $(this);
+              let _data = _form.serializeFormJSON();
 
-            let _me = $(this);
-            let _data = _me.data();
-            let _context = _.context();
+              rotate(_data.id, 'rotate-image-left');
 
-            if ('yes' == _data.ispdf) {
-              _context.append($('<a href="#"><i class="bi bi-box-arrow-up-right"></i>view</a>').on('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                _context.close();
+            })
+            .on('rotate-image-right', function(e) {
+              let _form = $(this);
+              let _data = _form.serializeFormJSON();
 
-                $('#<?= $_form ?>').trigger('view-pdf')
+              rotate(_data.id, 'rotate-image-right');
 
-              }));
+            })
+            .on('view-pdf', function(e) {
+              let _form = $(this);
+              let _data = _form.serializeFormJSON();
 
-            } else {
-              _context.append($('<a href="#"><i class="bi bi-arrow-counterclockwise"></i>rotate left</a>').on('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                _context.close();
+              window.open(_.url('<?= $this->route ?>/pdfof/' + _data.id));
 
-                $('#<?= $_form ?>').trigger('rotate-image-left')
+            });
 
-              }));
+          $('#<?= $_img ?>')
+            .on(_.browser.isMobileDevice ? 'click' : 'contextmenu', function(e) {
+              if (e.shiftKey)
+                return;
 
-              _context.append($('<a href="#"><i class="bi bi-arrow-clockwise"></i>rotate right</a>').on('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                _context.close();
-
-                $('#<?= $_form ?>').trigger('rotate-image-right')
-
-              }));
-
-            }
-
-            _context.append($('<a href="#">remove</a>').on('click', function(e) {
               e.stopPropagation();
               e.preventDefault();
-              _context.close();
+              _.hideContexts();
 
-              $('#<?= $_form ?>').trigger('delete-image')
+              let _me = $(this);
+              let _data = _me.data();
+              let _context = _.context();
 
-            }));
+              if ('yes' == _data.ispdf) {
+                _context.append($('<a href="#"><i class="bi bi-box-arrow-up-right"></i>view</a>').on('click', function(e) {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  _context.close();
 
-            _context.addClose().open(e);
+                  $('#<?= $_form ?>').trigger('view-pdf')
 
-          })
-          .on('refresh', function(e) {
-            let _me = $(this);
-            _me
-              .attr('src',
-                _.url('<?= $this->route ?>/imageof/<?= $dto->id ?>?t=' + _.dayjs().unix())
-
-              );
-
-            _.post({
-              url: _.url('<?= $this->route ?>'),
-              data: {
-                action: 'get-image-mime-type',
-                id: <?= $dto->id ?>
-              },
-
-            }).then(d => {
-              if ('ack' == d.response) {
-                _me.data('ispdf', 'application/pdf' == d.data ? 'yes' : 'no')
+                }));
 
               } else {
-                _.growl(d);
+                _context.append($('<a href="#"><i class="bi bi-arrow-counterclockwise"></i>rotate left</a>').on('click', function(e) {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  _context.close();
+
+                  $('#<?= $_form ?>').trigger('rotate-image-left')
+
+                }));
+
+                _context.append($('<a href="#"><i class="bi bi-arrow-clockwise"></i>rotate right</a>').on('click', function(e) {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  _context.close();
+
+                  $('#<?= $_form ?>').trigger('rotate-image-right')
+
+                }));
+
+              }
+
+              _context.append($('<a href="#">remove</a>').on('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                _context.close();
+
+                $('#<?= $_form ?>').trigger('delete-image')
+
+              }));
+
+              _context.addClose().open(e);
+
+            })
+            .on('refresh', function(e) {
+              let _me = $(this);
+              _me
+                .attr('src',
+                  _.url('<?= $this->route ?>/imageof/<?= $dto->id ?>?t=' + _.dayjs().unix())
+
+                );
+
+              _.post({
+                url: _.url('<?= $this->route ?>'),
+                data: {
+                  action: 'get-image-mime-type',
+                  id: <?= $dto->id ?>
+                },
+
+              }).then(d => {
+                if ('ack' == d.response) {
+                  _me.data('ispdf', 'application/pdf' == d.data ? 'yes' : 'no')
+
+                } else {
+                  _.growl(d);
+
+                }
+
+              });
+
+            });
+
+          (c => {
+
+            c.appendTo('#<?= $_uidFileUpload ?>');
+
+            _.fileDragDropHandler.call(c, {
+              url: _.url('<?= $this->route ?>'),
+              queue: false,
+              multiple: false,
+              postData: {
+                action: 'upload',
+                id: <?= $dto->id ?>
+              },
+              onUpload: d => {
+                if ('ack' == d.response) {
+                  $('#<?= $_img ?>').trigger('refresh');
+
+                }
 
               }
 
             });
 
-          });
+          })(_.fileDragDropContainer({
+            fileControl: true,
+            accept: 'image/jpeg,image/png,application/pdf'
 
-        (c => {
+          }));
 
-          c.appendTo('#<?= $_uidFileUpload ?>');
+          $('select, input, textarea', '#<?= $_form ?>')
+            .on('change', e => $('#<?= $_btnIssue ?>').prop('disabled', true))
 
-          _.fileDragDropHandler.call(c, {
-            url: _.url('<?= $this->route ?>'),
-            queue: false,
-            multiple: false,
-            postData: {
-              action: 'upload',
-              id: <?= $dto->id ?>
-            },
-            onUpload: d => {
-              if ('ack' == d.response) {
-                $('#<?= $_img ?>').trigger('refresh');
+          $('#<?= $_btnIssue ?>')
+            .on('click', function(e) {
+              e.stopPropagation();
+              e.preventDefault();
 
-              }
+              $('#<?= $_modal ?>').trigger('issue');
+              $('#<?= $_modal ?>').modal('hide');
 
-            }
+            });
 
-          });
+        <?php }  ?>
 
-        })(_.fileDragDropContainer({
-          fileControl: true,
-          accept: 'image/jpeg,image/png,application/pdf'
-
-        }));
-
-
-        $('select, input, textarea', '#<?= $_form ?>').on('change', e => $('#<?= $_btnIssue ?>').prop('disabled', true))
-
-        $('#<?= $_btnIssue ?>').on('click', function(e) {
-          e.stopPropagation();
-          e.preventDefault();
-
-          $('#<?= $_modal ?>').trigger('issue');
-          $('#<?= $_modal ?>').modal('hide');
-
-        });
-
-      <?php }  ?>
-
-    }))(_brayworth_);
+      }))(_brayworth_);
   </script>
 
 </form>
