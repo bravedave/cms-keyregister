@@ -225,6 +225,49 @@ $dto = $this->data->dto;  ?>
           });
 
         $('#<?= $_form ?> textarea[name="description"]').autoResize();
+        <?php if ($dto->id == 0) {  ?>
+          /**
+           * it's new
+           * */
+          $('#<?= $_form ?> input[name="keyset"]')
+            .on('change', function(e) {
+              let _me = $(this);
+              if ('' != _me.val()) {
+                _.post({
+                  url: _.url('<?= $this->route ?>'),
+                  data: {
+                    action: 'get-keys',
+                    keyset: _me.val()
+
+                  },
+
+                }).then(d => {
+                  _me.siblings('.alert').remove();
+                  if ('ack' == d.response) {
+                    if (!!d.data) {
+                      $('#<?= $_form ?> button[type="submit"]').prop('disabled', true);
+                      $('<div class="alert alert-danger mt-1"></div>')
+                        .html(d.data.address_street)
+                        .appendTo(_me.parent());
+                    } else {
+                      $('#<?= $_form ?> button[type="submit"]').prop('disabled', false);
+                      _.growl(d);
+                    }
+
+                  } else {
+                    $('#<?= $_form ?> button[type="submit"]').prop('disabled', false);
+                    _.growl(d);
+
+                  }
+
+                });
+
+              }
+
+            });
+
+        <?php }  ?>
+
         $('#<?= $_form ?> input[name="keyset"]').focus();
         $('#<?= $_form ?> input[name="address_street"]')
           .autofill({

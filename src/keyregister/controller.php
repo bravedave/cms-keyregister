@@ -182,6 +182,34 @@ class controller extends \Controller {
 
       Json::ack($action)
         ->add('id', $id); // return id of management set
+    } elseif ('get-keys' == $action) {
+      /*
+        (_ => {
+          _.post({
+            url : _.url('keyregister'),
+            data : {
+              action : 'get-keys',
+              keyset : '4'
+
+            },
+
+          }).then( d => console.log(d));
+
+        })(_brayworth_);
+      */
+      if ($keyset = (int)$this->getPost('keyset')) {
+        $dao = new dao\keyregister;
+        if ($dto = $dao->getByKeySet($keyset)) {
+          $dto = $dao->getRichData($dto);
+
+          Json::ack($action)
+            ->add('data', $dto);
+        } else {
+          Json::nak($action);
+        }
+      } else {
+        Json::nak($action);
+      }
     } elseif ('get-keys-for-person' == $action) {
       /*
         (_ => {
@@ -238,7 +266,6 @@ class controller extends \Controller {
       } else {
         Json::nak($action .  ' -  missing id');
       }
-
     } elseif ('rotate-image-right' == $action || 'rotate-image-left' == $action) {
       $id = (int)$this->getPost('id');
       if ($id = (int)$this->getPost('id')) {
