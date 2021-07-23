@@ -413,58 +413,59 @@ use strings;  ?>
     let filterPM = '';
     if (pms.length > 0) {
 
-      $('#<?= $_filterPM ?>').on('contextmenu', function(e) {
-        if (e.shiftKey)
-          return;
+      $('#<?= $_filterPM ?>')
+        .on('contextmenu', function(e) {
+          if (e.shiftKey)
+            return;
 
-        e.stopPropagation();
-        e.preventDefault();
+          e.stopPropagation();
+          e.preventDefault();
 
-        _.hideContexts();
+          _.hideContexts();
 
-        let _context = _.context();
+          let _context = _.context();
 
-        $.each(pms, (i, pm) => {
+          $.each(pms, (i, pm) => {
+            _context.append(
+              $('<a href="#"></a>')
+              .html(pm)
+              .on('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                _context.close();
+
+                filterPM = $(this).html();
+                $('#<?= $_filterPM ?>').html('').append($('<div class="badge badge-primary"></div>').html(filterPM));
+                $('#<?= $srch ?>').trigger('search');
+
+              })
+              .on('reconcile', function() {
+                if (pm == filterPM) $(this).prepend('<i class="bi bi-check"></i>')
+
+              })
+              .trigger('reconcile')
+
+            );
+
+          });
+
+          _context.append('<hr>');
           _context.append(
-            $('<a href="#"></a>')
-            .html(pm)
-            .on('click', function(e) {
+            $('<a href="#">clear</a>').on('click', function(e) {
               e.stopPropagation();
               e.preventDefault();
               _context.close();
 
-              filterPM = $(this).html();
-              $('#<?= $_filterPM ?>').html('').append($('<div class="badge badge-primary"></div>').html(filterPM));
+              filterPM = '';
+              $('#<?= $_filterPM ?>').html('PM');
               $('#<?= $srch ?>').trigger('search');
 
             })
-            .on('reconcile', function() {
-              if (pm == filterPM) $(this).prepend('<i class="bi bi-check"></i>')
-
-            })
-            .trigger('reconcile')
-
           );
 
+          _context.open(e);
+
         });
-
-        _context.append('<hr>');
-        _context.append(
-          $('<a href="#">clear</a>').on('click', function(e) {
-            e.stopPropagation();
-            e.preventDefault();
-            _context.close();
-
-            filterPM = '';
-            $('#<?= $_filterPM ?>').html('PM');
-            $('#<?= $srch ?>').trigger('search');
-
-          })
-        );
-
-        _context.open(e);
-
-      });
 
     }
 
@@ -521,6 +522,7 @@ use strings;  ?>
             _context.close();
 
             filterType = '<?= config::keyset_management ?>';
+            localStorage.setItem('keyregister-filter-type', filterType);
             $('#<?= $srch ?>').trigger('search');
 
           })
@@ -540,6 +542,7 @@ use strings;  ?>
             _context.close();
 
             filterType = '<?= config::keyset_tenant ?>';
+            localStorage.setItem('keyregister-filter-type', filterType);
             $('#<?= $srch ?>').trigger('search');
 
           })
@@ -558,6 +561,7 @@ use strings;  ?>
             _context.close();
 
             filterType = '';
+            localStorage.removeItem('keyregister-filter-type');
             $('#<?= $srch ?>').trigger('search');
 
           })
@@ -621,7 +625,14 @@ use strings;  ?>
         $(this).trigger('search')
       });
 
-    $('#<?= $srch ?>-container').addClass('show');
+    if (!!localStorage.getItem('keyregister-filter-type')) {
+      filterType = localStorage.getItem('keyregister-filter-type');
+      $('#<?= $srch ?>').trigger('search');
+
+    }
+
+    $('#<?= $srch ?>-container')
+      .addClass('show');
 
     $(document)
       .on('key-search', (e, v) => {
