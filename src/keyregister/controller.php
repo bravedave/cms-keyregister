@@ -51,7 +51,7 @@ class controller extends \Controller {
     parent::before();
   }
 
-  protected function posthandler() {
+  protected function postHandler() {
     $action = $this->getPost('action');
 
     // sys::logger(sprintf('<%s> %s', $action, __METHOD__));

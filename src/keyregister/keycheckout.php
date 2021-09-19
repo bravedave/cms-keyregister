@@ -29,7 +29,7 @@ class keycheckout extends \Controller {
 
   }
 
-  protected function posthandler() {
+  protected function postHandler() {
     $action = $this->getPost('action');
 
     if ('get-person-by-mobile' == $action) {
