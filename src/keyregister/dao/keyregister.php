@@ -197,8 +197,8 @@ class keyregister extends _dao {
 				prop.`address_street`,
 				prop.`street_index`,
 				people.`name`,
-				(SELECT MAX(date) maxdate FROM keyregister_log WHERE keyregister_id = k.id AND %s = kl.`description`) %s,
-				(SELECT MAX(date) maxdate FROM keyregister_log WHERE keyregister_id = k.id AND %s = kl.`description`) %s
+				(SELECT MAX(kl.`date`) maxdate FROM keyregister_log kl WHERE kl.`keyregister_id` = k.`id` AND %s = kl.`description`) %s,
+				(SELECT MAX(kl.`date`) maxdate FROM keyregister_log kl WHERE kl.`keyregister_id` = k.`id` AND %s = kl.`description`) %s
 			FROM
 				`keyregister` k
 					LEFT JOIN
