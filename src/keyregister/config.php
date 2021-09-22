@@ -130,6 +130,7 @@ class config extends \config {
       self::$_KEYREGISTER_VERSION = $j->keyregister_version = $set;
 
       file_put_contents($config, json_encode($j, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+      chmod($config, 0666);
 
     }
 
