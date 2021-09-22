@@ -208,7 +208,7 @@ class keyregister extends _dao {
 			WHERE
 				k.`properties_id` = %d
 			ORDER BY
-				kl.`maxdate` ASC',
+				issued ASC',
 				$this->quote('issue'),
 				$this->quote('issued'),
 				$this->quote('return'),
