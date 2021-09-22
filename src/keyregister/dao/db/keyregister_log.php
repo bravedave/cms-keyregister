@@ -17,4 +17,6 @@ $dbc->defineField('people_id', 'bigint');
 $dbc->defineField('description', 'varchar');
 $dbc->defineField('date', 'datetime');
 
+$dbc->defineIndex('idx_keyregister_id', 'keyregister_id');
+
 $dbc->check();

@@ -197,15 +197,10 @@ class keyregister extends _dao {
 				prop.`address_street`,
 				prop.`street_index`,
 				people.`name`,
-				kl.`maxdate` issued
+				(SELECT MAX(date) maxdate FROM keyregister_log WHERE keyregister_id = k.id AND %s = kl.`description`) %s,
+				(SELECT MAX(date) maxdate FROM keyregister_log WHERE keyregister_id = k.id AND %s = kl.`description`) %s
 			FROM
-				`%s` k
-					LEFT JOIN
-				(SELECT
-						MAX(date) maxdate, keyregister_id
-				FROM
-						keyregister_log
-				GROUP BY keyregister_id) kl ON kl.`keyregister_id` = k.`id`
+				`keyregister` k
 					LEFT JOIN
 				`properties` prop ON prop.`id` = k.`properties_id`
 					LEFT JOIN
@@ -214,7 +209,10 @@ class keyregister extends _dao {
 				k.`properties_id` = %d
 			ORDER BY
 				kl.`maxdate` ASC',
-				$this->db_name(),
+				$this->quote('issue'),
+				$this->quote('issued'),
+				$this->quote('return'),
+				$this->quote('returned'),
 				$id
 
 			);
