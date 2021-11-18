@@ -11,7 +11,7 @@
 namespace cms\keyregister;
 
 class config extends \config {
-  const keyregister_db_version = 0.4;
+  const keyregister_db_version = 0.5;
 
   const enable_qr_codes = false;
 
