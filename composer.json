@@ -35,6 +35,9 @@
     "import-defaultset": [
       "cms\\keyregister\\utility::import"
     ],
+    "reset-db-version": [
+      "cms\\keyregister\\utility::resetDBVersion"
+    ],
     "post-update-cmd": [
       "cms\\keyregister\\utility::upgrade",
       "cms\\keyregister\\utility::upgrade_dev"

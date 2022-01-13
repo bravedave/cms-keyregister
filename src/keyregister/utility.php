@@ -27,6 +27,10 @@ class utility extends service {
     $dao->reset();
   }
 
+  protected function _resetDBVersion() {
+    config::keyregister_version_reset();
+  }
+
   protected function _upgrade() {
     config::route_register(config::$KEYCHECKOUT, 'cms\\keyregister\\keycheckout');
     config::route_register('keyregister', 'cms\\keyregister\\controller');
@@ -73,6 +77,11 @@ class utility extends service {
   static function reset() {
     $app = new self(application::startDir());
     $app->_reset();
+  }
+
+  static function resetDBVersion() {
+    $app = new self(application::startDir());
+    $app->_resetDBVersion();
   }
 
   static function upgrade() {

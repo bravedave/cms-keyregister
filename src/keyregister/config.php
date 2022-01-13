@@ -11,7 +11,7 @@
 namespace cms\keyregister;
 
 class config extends \config {
-  const keyregister_db_version = 0.5;
+  const keyregister_db_version = 0.72;
 
   const enable_qr_codes = false;
 
@@ -27,46 +27,31 @@ class config extends \config {
   const keyset_tenant_label = 'Tenant';
 
   static $KEYCHECKOUT = '';
-  protected static $_KEYREGISTER_VERSION = 0;
 
-  public static function keyset_abbreviation( int $type) : string {
-    if ( self::keyset_management == $type) {
+  public static function keyset_abbreviation(int $type): string {
+    if (self::keyset_management == $type) {
       return 'M';
-
-    }
-    elseif ( self::keyset_tenant == $type) {
+    } elseif (self::keyset_tenant == $type) {
       return 'T';
-
     }
 
     return '?';
-
   }
 
-  public static function keyset_text( int $type) : string {
-    if ( self::keyset_management == $type) {
+  public static function keyset_text(int $type): string {
+    if (self::keyset_management == $type) {
       return self::keyset_management_label;
-
-    }
-    elseif ( self::keyset_tenant == $type) {
+    } elseif (self::keyset_tenant == $type) {
       return self::keyset_tenant_label;
-
     }
 
     return '?';
-
   }
 
   public static function keyregister_checkdatabase() {
-    if (self::keyregister_version() < self::keyregister_db_version) {
-      self::keyregister_version(self::keyregister_db_version);
-
-      $dao = new dao\dbinfo;
-      $dao->dump($verbose = false);
-
-    }
-    // sys::logger( 'bro!');
-
+    $dao = new dao\dbinfo(null, method_exists(__CLASS__, 'cmsStore') ? self::cmsStore() : self::dataPath());
+    // // $dao->debug = true;
+    $dao->checkVersion('keyregister', self::keyregister_db_version);
   }
 
   public static function keyregister_config() {
@@ -74,31 +59,24 @@ class config extends \config {
       self::keyregister_Path(),
       'keyregister.json',
     ]);
-
   }
 
   public static function keyregister_init() {
     if (file_exists($config = self::keyregister_config())) {
       $j = json_decode(file_get_contents($config));
 
-      if (isset($j->keyregister_version)) {
-        self::$_KEYREGISTER_VERSION = (float)$j->keyregister_version;
-      }
-
       if (isset($j->keyregister_keycheckout)) {
         self::$KEYCHECKOUT = $j->keyregister_keycheckout;
-      }
-      else {
+      } else {
         self::$KEYCHECKOUT = $j->keyregister_keycheckout = md5(time());
         file_put_contents($config, json_encode($j, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-
       }
     }
   }
 
   public static function keyregister_Path(): string {
     $path = implode(DIRECTORY_SEPARATOR, [
-      rtrim(self::cmsStore(), '/'),
+      rtrim(method_exists(__CLASS__, 'cmsStore') ? self::cmsStore() : self::dataPath(), '/'),
       'keyregister'
 
     ]);
@@ -109,33 +87,12 @@ class config extends \config {
     }
 
     return $path;
-
   }
 
-  static function keyregister_version_reset() {
-    self::keyregister_version(self::$_KEYREGISTER_VERSION = 0);
-
-  }
-
-  static protected function keyregister_version($set = null) {
-    $ret = self::$_KEYREGISTER_VERSION;
-
-    if ((float)$set) {
-      $config = self::keyregister_config();
-
-      $j = file_exists($config) ?
-        json_decode(file_get_contents($config)) :
-        (object)[];
-
-      self::$_KEYREGISTER_VERSION = $j->keyregister_version = $set;
-
-      file_put_contents($config, json_encode($j, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-      chmod($config, 0666);
-
-    }
-
-    return $ret;
-
+  public static function keyregister_version_reset(): void {
+    $dao = new dao\dbinfo(null, method_exists(__CLASS__, 'cmsStore') ? self::cmsStore() : self::dataPath());
+    // // $dao->debug = true;
+    $dao->setVersion('keyregister', 0);
   }
 
 }

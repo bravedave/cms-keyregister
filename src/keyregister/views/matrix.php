@@ -41,6 +41,7 @@ use strings;  ?>
         <td>keyset</td>
         <td class="text-center" id="<?= $_filterType = strings::rand() ?>">type</td>
         <td>address</td>
+        <td class="d-none d-md-table-cell text-center" id="<?= $_filterForRent = strings::rand() ?>">R</td>
         <td class="d-none d-sm-table-cell">name</td>
         <td class="d-none d-md-table-cell">last issue</td>
         <td class="d-none d-md-table-cell">location</td>
@@ -52,25 +53,46 @@ use strings;  ?>
     </thead>
 
     <tbody>
-      <?php while ($dto = $this->data->res->dto()) { ?>
-        <tr data-id="<?= $dto->id ?>" data-properties_id="<?= $dto->properties_id ?>" data-address_street="<?= htmlentities($dto->address_street) ?>" data-people_id="<?= $dto->people_id ?>" data-name="<?= htmlentities($dto->name) ?>" data-mobile="<?= $dto->mobile ?>" data-keyset_type="<?= $dto->keyset_type ?>" data-pm="<?= strings::initials($dto->pm) ?>">
-          <td class="small text-center text-muted border-right" line-number></td>
-          <td><?= $dto->keyset ?></td>
-          <td class="text-center"><?= config::keyset_abbreviation($dto->keyset_type) ?></td>
-          <td>
-            <?= $dto->address_street ?>
-            <div class="d-md-none"><?= $dto->name ?: $dto->location ?></div>
+      <?php while ($dto = $this->data->res->dto()) {
+        printf(
+          '<tr
+            data-id="%s"
+            data-properties_id="%s"
+            data-address_street="%s"
+            data-people_id="%s"
+            data-name="%s"
+            data-mobile="%s"
+            data-keyset_type="%s"
+            data-pm="%s"
+            data-forrent="%s">',
+          $dto->id,
+          $dto->properties_id,
+          htmlentities($dto->address_street),
+          $dto->people_id,
+          htmlentities($dto->name),
+          $dto->mobile,
+          $dto->keyset_type,
+          strings::initials($dto->pm),
+          $dto->forrent
+        ); ?>
+        <td class="small text-center text-muted border-right" line-number></td>
+        <td><?= $dto->keyset ?></td>
+        <td class="text-center"><?= config::keyset_abbreviation($dto->keyset_type) ?></td>
+        <td>
+          <?= $dto->address_street ?>
+          <div class="d-md-none"><?= $dto->name ?: $dto->location ?></div>
 
-          </td>
-          <td class="d-none d-sm-table-cell" data-role="name"><?= $dto->name ?></td>
-          <td class="d-none d-md-table-cell" data-role="last-issue"><?php if ($dto->people_id) print strings::asShortDate($dto->maxdate, $time = true) ?></td>
-          <td class="d-none d-md-table-cell"><?= $dto->location ?></td>
-          <td class="d-none d-md-table-cell" data-role="phone-indicator"><?= strings::isMobilePhone((string)$dto->mobile) ? '<i class="bi bi-telephone" title="has mobile phone"></i>' : '' ?></td>
-          <td class="d-none d-md-table-cell text-center"><?= strings::initials($dto->pm) ?></td>
+        </td>
+        <td class="d-none d-md-table-cell text-center"><?= $dto->forrent ? '&check;' : '' ?></td>
+        <td class="d-none d-sm-table-cell" data-role="name"><?= $dto->name ?></td>
+        <td class="d-none d-md-table-cell" data-role="last-issue"><?php if ($dto->people_id) print strings::asShortDate($dto->maxdate, $time = true) ?></td>
+        <td class="d-none d-md-table-cell"><?= $dto->location ?></td>
+        <td class="d-none d-md-table-cell" data-role="phone-indicator"><?= strings::isMobilePhone((string)$dto->mobile) ? '<i class="bi bi-telephone" title="has mobile phone"></i>' : '' ?></td>
+        <td class="d-none d-md-table-cell text-center"><?= strings::initials($dto->pm) ?></td>
 
-        </tr>
-
-      <?php } ?>
+      <?php
+        print '</tr>';
+      } ?>
 
     </tbody>
 
@@ -497,7 +519,7 @@ use strings;  ?>
 
         <?php }  ?>
 
-        $('#<?= $tblID ?>').addClass('show').trigger('update-line-numbers');
+        $('#<?= $tblID ?>').addClass('show');
 
       });
 
@@ -571,6 +593,75 @@ use strings;  ?>
 
       });
 
+    let filterForRent = false;
+    $('#<?= $_filterForRent ?>')
+      .on('contextmenu', function(e) {
+        if (e.shiftKey)
+          return;
+
+        e.stopPropagation();
+        e.preventDefault();
+
+        _.hideContexts();
+
+        let _context = _.context();
+
+        _context.append(
+          $('<a href="#">Show for Rent</a>')
+          .on('click', e => {
+            e.stopPropagation();
+            e.preventDefault();
+            _context.close();
+
+            filterForRent = true;
+            localStorage.setItem('keyregister-filter-forrent', 1);
+            $(this).trigger('set-indicator');
+            $('#<?= $srch ?>').trigger('search');
+
+          })
+          .on('reconcile', function() {
+            if (filterForRent) $(this).prepend('<i class="bi bi-check"></i>')
+
+          })
+          .trigger('reconcile')
+
+        );
+
+        _context.append(
+          $('<a href="#">Show All</a>')
+          .on('click', e => {
+            e.stopPropagation();
+            e.preventDefault();
+            _context.close();
+
+            filterForRent = false;
+            localStorage.removeItem('keyregister-filter-forrent');
+            $(this).trigger('set-indicator');
+            $('#<?= $srch ?>').trigger('search');
+
+          })
+          .on('reconcile', function() {
+            if (!filterForRent) $(this).prepend('<i class="bi bi-check"></i>')
+
+          })
+          .trigger('reconcile')
+
+        );
+
+        _context.open(e);
+
+      })
+      .on('set-indicator', function(e) {
+        if (filterForRent) {
+          $(this).addClass('bg-secondary text-white');
+
+        } else {
+          $(this).removeClass('bg-secondary text-white');
+
+        }
+
+      });
+
     $('#<?= $ooo ?>')
       .on('change', e => $('#<?= $srch ?>').trigger('search'))
 
@@ -593,6 +684,9 @@ use strings;  ?>
           let _data = _tr.data();
 
           if (oof && Number(_data.people_id) < 1) {
+            _tr.addClass('d-none');
+
+          } else if (filterForRent && _data.forrent != 1) {
             _tr.addClass('d-none');
 
           } else if (filterType != '' && _data.keyset_type != filterType) {
@@ -625,9 +719,17 @@ use strings;  ?>
         $(this).trigger('search')
       });
 
-    if (!!localStorage.getItem('keyregister-filter-type')) {
-      filterType = localStorage.getItem('keyregister-filter-type');
+    if (!!localStorage.getItem('keyregister-filter-type') || !!localStorage.getItem('keyregister-filter-forrent')) {
+      if (!!localStorage.getItem('keyregister-filter-type')) {
+        filterType = localStorage.getItem('keyregister-filter-type');
+      }
+      if (!!localStorage.getItem('keyregister-filter-forrent')) {
+        filterForRent = localStorage.getItem('keyregister-filter-forrent');
+        $('#<?= $_filterForRent ?>').trigger('set-indicator');
+      }
       $('#<?= $srch ?>').trigger('search');
+    } else {
+      $('#<?= $tblID ?>').trigger('update-line-numbers');
 
     }
 

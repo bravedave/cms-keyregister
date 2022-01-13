@@ -8,9 +8,11 @@
  *
 */
 
-namespace dao;
+namespace cms\keyregister\dao;
 
-$dbc = \sys::dbCheck( 'properties');
+$dbc = \sys::dbCheck('properties');
 
-$dbc->defineField( 'property_manager','bigint');
+$dbc->defineField('property_manager', 'bigint');
+$dbc->defineField('forrent', 'tinyint');
+
 $dbc->check();

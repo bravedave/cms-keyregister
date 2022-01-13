@@ -88,6 +88,7 @@ class keyregister extends _dao {
 				k.*,
 				prop.`address_street`,
 				prop.`property_manager`,
+				prop.`forrent`,
 				p.`name`,
 				p.`mobile`,
 				kl.`maxdate`,

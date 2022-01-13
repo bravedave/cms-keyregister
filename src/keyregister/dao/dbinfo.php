@@ -21,17 +21,29 @@ class dbinfo extends \dao\_dbinfo {
 	protected function check() {
 		parent::check();
 
-		sys::logger( 'checking ' . dirname( __FILE__ ) . '/db/*.php' );
+		sys::logger('checking ' . dirname(__FILE__) . '/db/*.php');
 
-		if ( glob( dirname( __FILE__ ) . '/db/*.php')) {
-			foreach ( glob( dirname( __FILE__ ) . '/db/*.php') as $f ) {
-				sys::logger( 'checking => ' . $f );
+		if (glob(dirname(__FILE__) . '/db/*.php')) {
+			foreach (glob(dirname(__FILE__) . '/db/*.php') as $f) {
+				sys::logger('checking => ' . $f);
 				include_once $f;
-
 			}
-
 		}
-
 	}
 
+	public function setVersion(string $key, float $version): void {
+
+		$json = (object)[];
+		if (file_exists($store = $this->db_version_file())) {
+			$json = json_decode(file_get_contents($store));
+		}
+
+		$json->{$key} = $version;
+
+		file_put_contents($store, json_encode($json, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		if (posix_geteuid() == fileowner($store)) {
+			chmod($store, 0666);
+		}
+		clearstatcache(true);
+	}
 }
