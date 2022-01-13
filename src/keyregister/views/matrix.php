@@ -210,7 +210,7 @@ use strings;  ?>
             _.post({
               url: _.url('<?= $this->route ?>'),
               data: {
-                action: 'key-archive',
+                action: 'key-archive-undo',
                 id: _data.id
 
               },
