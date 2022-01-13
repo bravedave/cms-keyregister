@@ -32,6 +32,11 @@ use strings;  ?>
   </div>
 
 </div>
+<style>
+  .text-decoration-line-through {
+    text-decoration: line-through;
+  }
+</style>
 
 <div class="table-responsive">
   <table class="table table-sm fade" id="<?= $tblID = strings::rand() ?>">
@@ -593,7 +598,7 @@ use strings;  ?>
 
       });
 
-    let filterForRent = false;
+    let filterForRent = 0;
     $('#<?= $_filterForRent ?>')
       .on('contextmenu', function(e) {
         if (e.shiftKey)
@@ -613,14 +618,35 @@ use strings;  ?>
             e.preventDefault();
             _context.close();
 
-            filterForRent = true;
+            filterForRent = 1;
             localStorage.setItem('keyregister-filter-forrent', 1);
             $(this).trigger('set-indicator');
             $('#<?= $srch ?>').trigger('search');
 
           })
           .on('reconcile', function() {
-            if (filterForRent) $(this).prepend('<i class="bi bi-check"></i>')
+            if (1 == filterForRent) $(this).prepend('<i class="bi bi-check"></i>')
+
+          })
+          .trigger('reconcile')
+
+        );
+
+        _context.append(
+          $('<a href="#">Show NOT for Rent</a>')
+          .on('click', e => {
+            e.stopPropagation();
+            e.preventDefault();
+            _context.close();
+
+            filterForRent = 2;
+            localStorage.setItem('keyregister-filter-forrent', 2);
+            $(this).trigger('set-indicator');
+            $('#<?= $srch ?>').trigger('search');
+
+          })
+          .on('reconcile', function() {
+            if (2 == filterForRent) $(this).prepend('<i class="bi bi-check"></i>')
 
           })
           .trigger('reconcile')
@@ -634,14 +660,14 @@ use strings;  ?>
             e.preventDefault();
             _context.close();
 
-            filterForRent = false;
+            filterForRent = 0;
             localStorage.removeItem('keyregister-filter-forrent');
             $(this).trigger('set-indicator');
             $('#<?= $srch ?>').trigger('search');
 
           })
           .on('reconcile', function() {
-            if (!filterForRent) $(this).prepend('<i class="bi bi-check"></i>')
+            if (0 == filterForRent) $(this).prepend('<i class="bi bi-check"></i>')
 
           })
           .trigger('reconcile')
@@ -652,11 +678,19 @@ use strings;  ?>
 
       })
       .on('set-indicator', function(e) {
-        if (filterForRent) {
-          $(this).addClass('bg-secondary text-white');
+        if (1 == filterForRent) {
+          $(this)
+            .removeClass('text-decoration-line-through')
+            .addClass('bg-secondary text-white');
+
+        } else if (2 == filterForRent) {
+          $(this)
+            .removeClass('bg-secondary text-white')
+            .addClass('text-decoration-line-through');
 
         } else {
-          $(this).removeClass('bg-secondary text-white');
+          $(this)
+            .removeClass('bg-secondary text-white text-decoration-line-through');
 
         }
 
@@ -686,7 +720,10 @@ use strings;  ?>
           if (oof && Number(_data.people_id) < 1) {
             _tr.addClass('d-none');
 
-          } else if (filterForRent && _data.forrent != 1) {
+          } else if (1 == filterForRent && _data.forrent != 1) {
+            _tr.addClass('d-none');
+
+          } else if (2 == filterForRent && _data.forrent == 1) {
             _tr.addClass('d-none');
 
           } else if (filterType != '' && _data.keyset_type != filterType) {
