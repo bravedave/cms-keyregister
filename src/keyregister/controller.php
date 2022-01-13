@@ -23,11 +23,13 @@ class controller extends \Controller {
 
   protected function _index() {
 
+    $includeArchived = 'yes' == currentUser::option('keyset-include-archived');
     $dao = new dao\keyregister;
     $this->data = (object)[
       'title' => $this->title = config::label,
-      'res' => $dao->getDataSet(),
-      'count' => $dao->getRecordCount(),
+      'archived' => $includeArchived,
+      'res' => $dao->getDataSet($includeArchived),
+      'count' => $dao->getRecordCount($includeArchived),
       'idx' => $this->getParam('idx'),
       'rex' => $this->getParam('rex'),
 
@@ -56,7 +58,17 @@ class controller extends \Controller {
 
     // sys::logger(sprintf('<%s> %s', $action, __METHOD__));
 
-    if ('key-delete' == $action) {
+    if ('key-archive' == $action || 'key-archive-undo' == $action) {
+      if ($id = (int)$this->getPost('id')) {
+        $dao = new dao\keyregister;
+        $dao->UpdateByID([
+          'archived' => 'key-archive-undo' == $action ? 0 : 1
+        ], $id);
+        Json::ack($action);
+      } else {
+        Json::ack($action);
+      }
+    } elseif ('key-delete' == $action) {
       $id = (int)$this->getPost('id');
       $dao = new dao\keyregister;
       if ($dto = $dao->getByID($id)) {
@@ -266,6 +278,12 @@ class controller extends \Controller {
       } else {
         Json::nak($action .  ' -  missing id');
       }
+    } elseif ('set-include-archived' == $action) {
+      $v = $this->getPost('value');
+      if ( 'yes' != $v) $v = '';
+      currentUser::option('keyset-include-archived', $v);
+      Json::ack($action);
+
     } elseif ('rotate-image-right' == $action || 'rotate-image-left' == $action) {
       $id = (int)$this->getPost('id');
       if ($id = (int)$this->getPost('id')) {

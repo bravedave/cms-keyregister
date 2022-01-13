@@ -10,11 +10,50 @@
 
 namespace cms\keyregister;
 
+use currentUser;
 use strings;  ?>
 <h1 class="d-none d-print-block"><?= $this->title ?></h1>
 <div class="form-row mb-2 d-print-none fade" id="<?= $srch = strings::rand() ?>-container">
   <div class="col">
     <input type="search" class="form-control" autofocus id="<?= $srch ?>">
+
+  </div>
+
+  <div class="col-auto d-none d-md-block pt-2">
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="<?= $_uid = strings::rand() ?>" <?= 'yes' == currentUser::option('keyset-include-archived') ? 'checked' : '' ?>>
+
+      <label class="form-check-label" for="<?= $_uid ?>">
+        archived
+
+      </label>
+
+    </div>
+    <script>
+      (_ => {
+        $('#<?= $_uid ?>')
+          .on('change', function(e) {
+            _.post({
+              url: _.url('<?= $this->route ?>'),
+              data: {
+                action: 'set-include-archived',
+                value: this.checked ? 'yes': 'no'
+              },
+
+            }).then(d => {
+              _.growl(d);
+              if ('ack' == d.response) {
+                hourglass.on();
+                window.location.reload();
+
+              }
+
+            });
+
+
+          });
+      })(_brayworth_);
+    </script>
 
   </div>
 
@@ -61,6 +100,7 @@ use strings;  ?>
       <?php while ($dto = $this->data->res->dto()) {
         printf(
           '<tr
+            class="%s"
             data-id="%s"
             data-properties_id="%s"
             data-address_street="%s"
@@ -69,7 +109,9 @@ use strings;  ?>
             data-mobile="%s"
             data-keyset_type="%s"
             data-pm="%s"
+            data-archived="%s"
             data-forrent="%s">',
+          (int)$dto->archived ? 'text-muted' : '',
           $dto->id,
           $dto->properties_id,
           htmlentities($dto->address_street),
@@ -78,6 +120,7 @@ use strings;  ?>
           $dto->mobile,
           $dto->keyset_type,
           strings::initials($dto->pm),
+          (int)$dto->archived,
           $dto->forrent
         ); ?>
         <td class="small text-center text-muted border-right" line-number></td>
@@ -134,6 +177,58 @@ use strings;  ?>
         }
 
         _tr
+          .on('archive', function(e) {
+            let _me = $(this);
+            let _data = _me.data();
+
+            _.post({
+              url: _.url('<?= $this->route ?>'),
+              data: {
+                action: 'key-archive',
+                id: _data.id
+
+              },
+
+            }).then(d => {
+              if ('ack' == d.response) {
+                _me
+                  .data('archived', 1)
+                  .addClass('text-muted');
+
+              } else {
+                _.growl(d);
+
+              }
+
+            });
+
+          })
+          .on('archive-undo', function(e) {
+            let _me = $(this);
+            let _data = _me.data();
+
+            _.post({
+              url: _.url('<?= $this->route ?>'),
+              data: {
+                action: 'key-archive',
+                id: _data.id
+
+              },
+
+            }).then(d => {
+              if ('ack' == d.response) {
+                _me
+                  .data('archived', 0)
+                  .removeClass('text-muted');
+
+              } else {
+                _.growl(d);
+
+              }
+
+            });
+
+          })
           .on('delete', function(e) {
             let _me = $(this);
 
@@ -364,14 +459,46 @@ use strings;  ?>
 
             }
 
-            _context.append($('<a href="#"><i class="bi bi-trash"></i>delete</a>').on('click', function(e) {
-              e.stopPropagation();
-              e.preventDefault();
-              _context.close();
+            // _context.append($('<a href="#"><i class="bi bi-trash"></i>delete</a>').on('click', function(e) {
+            //   e.stopPropagation();
+            //   e.preventDefault();
+            //   _context.close();
 
-              _tr.trigger('delete');
+            //   _tr.trigger('delete');
 
-            }));
+            // }));
+
+            _context.append(
+              $('<a href="#">archive</a>')
+              .on('recon', function(e) {
+                if (1 == Number(_data.archived)) {
+                  $(this)
+                    .on('click', function(e) {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      _context.close();
+
+                      _tr.trigger('archive-undo');
+
+                    })
+                    .prepend('<i class="bi bi-archive-fill"></i>')
+
+                } else {
+                  $(this)
+                    .on('click', function(e) {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      _context.close();
+
+                      _tr.trigger('archive');
+
+                    })
+                    .prepend('<i class="bi bi-archive"></i>')
+
+                }
+              })
+              .trigger('recon')
+            );
 
             _context.addClose().open(e);
 

@@ -18,6 +18,7 @@ $dbc->defineField('location', 'varchar', 100);
 $dbc->defineField('properties_id', 'bigint');
 $dbc->defineField('people_id', 'bigint');
 $dbc->defineField('description', 'text');
+$dbc->defineField('archived', 'tinyint');
 $dbc->defineField('created', 'datetime');
 $dbc->defineField('updated', 'datetime');
 

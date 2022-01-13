@@ -82,7 +82,19 @@ class keyregister extends _dao {
 		return null;
 	}
 
-	public function getDataSet() {
+	public function getDataSet( $archived = false) {
+		$where = '';
+		$_where = [];
+		if (!$archived) $_where[] = 'k.`archived` = 0';
+
+		if ( $_where) {
+			$where = sprintf(
+				'WHERE %s',
+				implode( ' AND ', $_where)
+
+			);
+		}
+
 		$sql = sprintf(
 			'SELECT
 				k.*,
@@ -115,9 +127,11 @@ class keyregister extends _dao {
 				`users` u ON prop.`property_manager` = u.`id`
 					LEFT JOIN
 				`users` uc ON cp.`PropertyManager` = uc.`console_code`
+				%s
 			ORDER BY
 				CAST( k.`keyset` AS INTEGER) ASC, k.`keyset_type` ASC',
-			$this->db_name()
+			$this->db_name(),
+			$where
 
 		);
 
@@ -234,8 +248,10 @@ class keyregister extends _dao {
 		]);
 	}
 
-	public function getRecordCount(): int {
-		if ($res = $this->Result('SELECT count(`id`) tot FROM `keyregister`')) {
+	public function getRecordCount($archived = false): int {
+		$sql = 'SELECT count(`id`) tot FROM `keyregister`';
+		if ( !$archived) $sql .= ' WHERE `archived` = 0';
+		if ($res = $this->Result($sql)) {
 			if ($dto = $res->dto()) {
 				return (int)$dto->tot;
 			}
