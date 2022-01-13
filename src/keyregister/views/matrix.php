@@ -37,7 +37,7 @@ use strings;  ?>
               url: _.url('<?= $this->route ?>'),
               data: {
                 action: 'set-include-archived',
-                value: this.checked ? 'yes': 'no'
+                value: this.checked ? 'yes' : 'no'
               },
 
             }).then(d => {
@@ -190,13 +190,11 @@ use strings;  ?>
               },
 
             }).then(d => {
+              _.growl(d);
               if ('ack' == d.response) {
                 _me
                   .data('archived', 1)
                   .addClass('text-muted');
-
-              } else {
-                _.growl(d);
 
               }
 
@@ -216,13 +214,11 @@ use strings;  ?>
               },
 
             }).then(d => {
+              _.growl(d);
               if ('ack' == d.response) {
                 _me
                   .data('archived', 0)
                   .removeClass('text-muted');
-
-              } else {
-                _.growl(d);
 
               }
 
