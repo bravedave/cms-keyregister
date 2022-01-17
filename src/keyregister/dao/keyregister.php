@@ -20,6 +20,29 @@ class keyregister extends _dao {
 	protected $_db_name = 'keyregister';
 	protected $template = __NAMESPACE__ . '\dto\keyregister';
 
+	public function freeset() : array {
+		$a = [];
+		for ($i = 100; $i < 1000; $i++) {
+			$a[] = (string)$i;
+		}
+
+		$sql = 'SELECT `keyset` FROM `keyregister`';
+		if ($res = $this->Result($sql)) {
+			$res->dtoSet(function ($dto) use (&$a) {
+				$i = array_search($dto->keyset, $a);
+				if (false !== $i) {
+					unset($a[$i]);
+				}
+			});
+		}
+
+		$_a = [];
+		foreach ($a as $v) {
+			$_a[] = $v;
+		}
+		return $_a;
+	}
+
 	public function import() {
 		$path = implode(
 			DIRECTORY_SEPARATOR,
@@ -31,7 +54,7 @@ class keyregister extends _dao {
 
 		);
 
-		if ( file_exists( $path)) {
+		if (file_exists($path)) {
 			$csv = new ParseCsv\Csv;
 			$csv->auto($path);
 			set_time_limit(300);
@@ -54,14 +77,10 @@ class keyregister extends _dao {
 					$this->Insert($a);
 				}
 			}
-
+		} else {
+			\sys::logger(sprintf('<missing import file> %s', $path, __METHOD__));
+			\sys::logger(sprintf('<%s> %s', $path, __METHOD__));
 		}
-		else {
-			\sys::logger( sprintf('<missing import file> %s', $path, __METHOD__));
-			\sys::logger( sprintf('<%s> %s', $path, __METHOD__));
-
-		}
-
 	}
 
 	public function getByKeySet(string $key) {
@@ -82,15 +101,15 @@ class keyregister extends _dao {
 		return null;
 	}
 
-	public function getDataSet( $archived = false) {
+	public function getDataSet($archived = false) {
 		$where = '';
 		$_where = [];
 		if (!$archived) $_where[] = 'k.`archived` = 0';
 
-		if ( $_where) {
+		if ($_where) {
 			$where = sprintf(
 				'WHERE %s',
-				implode( ' AND ', $_where)
+				implode(' AND ', $_where)
 
 			);
 		}
@@ -250,7 +269,7 @@ class keyregister extends _dao {
 
 	public function getRecordCount($archived = false): int {
 		$sql = 'SELECT count(`id`) tot FROM `keyregister`';
-		if ( !$archived) $sql .= ' WHERE `archived` = 0';
+		if (!$archived) $sql .= ' WHERE `archived` = 0';
 		if ($res = $this->Result($sql)) {
 			if ($dto = $res->dto()) {
 				return (int)$dto->tot;
@@ -316,7 +335,6 @@ class keyregister extends _dao {
 
 			$todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
 			$todo($fileinfo->getRealPath());
-
 		}
 
 		config::keyregister_checkdatabase();

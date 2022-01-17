@@ -48,9 +48,18 @@ use strings;  ?>
 
   <?php } ?>
 
+  <li class="nav-item"><a href="#" class="nav-link" id="<?= $_uidFreeSet = strings::rand() ?>"><?= config::label_freeset ?></a></li>
   <li class="nav-item my-4"><button class="btn btn-block btn-outline-secondary" id="<?= $_btnAdd = strings::rand() ?>"><i class="bi bi-plus"></i> new</button></li>
   <script>
     (_ => {
+      $('#<?= $_uidFreeSet ?>').on('click', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        _.get.modal(_.url('<?= $this->route ?>/freeset'));
+
+      });
+
       $('#<?= $_btnAdd ?>').on('click', function(e) {
         e.stopPropagation();
         e.preventDefault();

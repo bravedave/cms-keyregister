@@ -280,10 +280,9 @@ class controller extends \Controller {
       }
     } elseif ('set-include-archived' == $action) {
       $v = $this->getPost('value');
-      if ( 'yes' != $v) $v = '';
+      if ('yes' != $v) $v = '';
       currentUser::option('keyset-include-archived', $v);
       Json::ack($action);
-
     } elseif ('rotate-image-right' == $action || 'rotate-image-left' == $action) {
       $id = (int)$this->getPost('id');
       if ($id = (int)$this->getPost('id')) {
@@ -419,6 +418,19 @@ class controller extends \Controller {
     ];
 
     $this->load('edit');
+  }
+
+  public function freeset() {
+    /**
+     * _brayworth_.get.modal(_brayworth_.url('keyregister/freeset'))
+     */
+    $dao = new dao\keyregister;
+    $this->data = (object)[
+      'title' => $this->title = config::label_freeset,
+      'freeset' => $dao->freeset()
+    ];
+
+    $this->load('freeset');
   }
 
   public function pdfof(int $id = 0) {

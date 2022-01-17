@@ -20,6 +20,7 @@ class config extends \config {
   const label_issue = 'Issue Key';
   const label_issue_log = 'Issue Log';
   const label_new = 'New Key';
+  const label_freeset = 'Free Set';
 
   const keyset_management = 1;
   const keyset_tenant = 2;
