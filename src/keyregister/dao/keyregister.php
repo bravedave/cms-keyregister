@@ -26,7 +26,7 @@ class keyregister extends _dao {
 			$a[] = (string)$i;
 		}
 
-		$sql = 'SELECT `keyset` FROM `keyregister`';
+		$sql = 'SELECT `keyset` FROM `keyregister` WHERE `archived` = 0';
 		if ($res = $this->Result($sql)) {
 			$res->dtoSet(function ($dto) use (&$a) {
 				$i = array_search($dto->keyset, $a);
