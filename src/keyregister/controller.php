@@ -201,7 +201,8 @@ class controller extends \Controller {
             url : _.url('keyregister'),
             data : {
               action : 'get-keys',
-              keyset : '4'
+              keyset : '4',
+              archived : 0
 
             },
 
@@ -210,8 +211,9 @@ class controller extends \Controller {
         })(_brayworth_);
       */
       if ($keyset = (int)$this->getPost('keyset')) {
+        $archived = (bool)$this->getPost('archived');
         $dao = new dao\keyregister;
-        if ($dto = $dao->getByKeySet($keyset)) {
+        if ($dto = $dao->getByKeySet($keyset, $archived)) {
           $dto = $dao->getRichData($dto);
 
           Json::ack($action)

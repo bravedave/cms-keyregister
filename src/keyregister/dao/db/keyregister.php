@@ -22,6 +22,6 @@ $dbc->defineField('archived', 'tinyint');
 $dbc->defineField('created', 'datetime');
 $dbc->defineField('updated', 'datetime');
 
-$dbc->defineIndex('idx_keyregister_keyset_type_propertites_id', '`keyset_type` ASC, `properties_id` ASC');
+$dbc->defineIndex('idx_keyregister_keyset_type_properties_id', '`keyset_type` ASC, `properties_id` ASC');
 
 $dbc->check();

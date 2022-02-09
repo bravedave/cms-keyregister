@@ -237,6 +237,7 @@ $dto = $this->data->dto;  ?>
                   url: _.url('<?= $this->route ?>'),
                   data: {
                     action: 'get-keys',
+                    archived : 0,
                     keyset: _me.val()
 
                   },

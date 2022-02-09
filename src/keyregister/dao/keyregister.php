@@ -85,12 +85,17 @@ class keyregister extends _dao {
 
 	public function getByKeySet(string $key) {
 		if ($key) {
-			$sql = sprintf(
-				'SELECT * FROM `%s` WHERE `keyset` = %s AND `keyset_type` = %s',
-				$this->db_name(),
-				$this->quote($key),
-				$this->quote(config::keyset_management)
+			$where = [
+				sprintf('`keyset` = %s', $this->quote($key)),
+				sprintf( '`keyset_type` = %s', $this->quote(config::keyset_management))
+			];
 
+			if ( !$archived) $where[] = 'archived = 0';
+
+			$sql = sprintf(
+				'SELECT * FROM `%s` WHERE %s',
+				$this->db_name(),
+				implode( ' AND ', $where)
 			);
 
 			if ($res = $this->Result($sql)) {
