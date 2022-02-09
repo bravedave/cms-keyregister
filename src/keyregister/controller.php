@@ -219,7 +219,8 @@ class controller extends \Controller {
           Json::ack($action)
             ->add('data', $dto);
         } else {
-          Json::nak($action);
+          Json::ack($action)
+            ->add('data', 0);
         }
       } else {
         Json::nak($action);
