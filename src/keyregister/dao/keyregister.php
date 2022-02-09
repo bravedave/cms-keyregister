@@ -83,7 +83,7 @@ class keyregister extends _dao {
 		}
 	}
 
-	public function getByKeySet(string $key) {
+	public function getByKeySet(string $key, bool $archived = false) {
 		if ($key) {
 			$where = [
 				sprintf('`keyset` = %s', $this->quote($key)),
