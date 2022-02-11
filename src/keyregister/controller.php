@@ -173,8 +173,7 @@ class controller extends \Controller {
         'keyset_type' => (int)$this->getPost('keyset_type'),
         'location' => $this->getPost('location'),
         'properties_id' => (int)$this->getPost('properties_id'),
-        'description' => $this->getPost('description'),
-        'updated' => \db::dbTimeStamp()
+        'description' => $this->getPost('description')
 
       ];
 
@@ -183,8 +182,6 @@ class controller extends \Controller {
       if ($id) {
         $dao->UpdateByID($a, $id);
       } else {
-        $a['created'] = $a['updated'];
-
         $a['keyset_type'] = config::keyset_management;
         $id = $dao->Insert($a);
 

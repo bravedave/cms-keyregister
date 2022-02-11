@@ -14,6 +14,7 @@ use cms\keyregister\config;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use dao\_dao;
+use db;
 use ParseCsv;
 
 class keyregister extends _dao {
@@ -321,6 +322,11 @@ class keyregister extends _dao {
 		return $path;
 	}
 
+	public function Insert($a) {
+		$a['created'] = $a['updated'] = db::dbTimeStamp();
+		return parent::Insert($a);
+	}
+
 	public function reset() {
 		$this->Q('DROP TABLE IF EXISTS `keyregister`');
 		$this->Q('DROP TABLE IF EXISTS `keyregister_log`');
@@ -343,5 +349,10 @@ class keyregister extends _dao {
 		}
 
 		config::keyregister_checkdatabase();
+	}
+
+	public function UpdateByID($a, $id) {
+		$a['updated'] = db::dbTimeStamp();
+		return parent::UpdateByID($a, $id);
 	}
 }
