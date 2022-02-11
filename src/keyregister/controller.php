@@ -208,7 +208,8 @@ class controller extends \Controller {
         })(_brayworth_);
       */
       $dao = new dao\keyregister;
-      Json::ack('data', $dao->freeset());
+      Json::ack($action)
+        ->add('data', $dao->freeset());
     } elseif ('get-keys' == $action) {
       /*
         (_ => {
