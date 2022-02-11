@@ -194,6 +194,21 @@ class controller extends \Controller {
 
       Json::ack($action)
         ->add('id', $id); // return id of management set
+    } elseif ('get-freeset' == $action) {
+      /*
+        (_ => {
+          _.post({
+            url : _.url('keyregister'),
+            data : {
+              action : 'get-freeset',
+            },
+
+          }).then( d => console.log(d));
+
+        })(_brayworth_);
+      */
+      $dao = new dao\keyregister;
+      Json::ack('data', $dao->freeset());
     } elseif ('get-keys' == $action) {
       /*
         (_ => {
