@@ -10,7 +10,7 @@
 
 namespace cms\keyregister\dao\dto;
 
-use dao\dto\_dto;
+use dvc\dao\dto\_dto;
 
 class keyregister extends _dto {
 	public $id = 0;
