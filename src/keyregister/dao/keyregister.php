@@ -251,7 +251,7 @@ class keyregister extends _dao {
 					LEFT JOIN
 				`people` ON people.`id` = k.`people_id`
 			WHERE
-				k.`properties_id` = %d
+				%s
 			ORDER BY
 				issued ASC',
 				$this->quote('issue'),
