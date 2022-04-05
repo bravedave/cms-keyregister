@@ -10,7 +10,7 @@
 
 namespace cms\keyregister\dao;
 
-use dao\_dao;
+use dvc\dao\_dao;
 
 class keyregister_log extends _dao {
 	protected $_db_name = 'keyregister_log';

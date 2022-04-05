@@ -13,7 +13,7 @@ namespace cms\keyregister\dao;
 use cms\keyregister\config;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
-use dao\_dao;
+use dvc\dao\_dao;
 use db;
 use ParseCsv;
 
@@ -21,7 +21,7 @@ class keyregister extends _dao {
 	protected $_db_name = 'keyregister';
 	protected $template = __NAMESPACE__ . '\dto\keyregister';
 
-	public function freeset() : array {
+	public function freeset(): array {
 		$a = [];
 		for ($i = 100; $i < 1000; $i++) {
 			$a[] = (string)$i;
@@ -88,15 +88,15 @@ class keyregister extends _dao {
 		if ($key) {
 			$where = [
 				sprintf('`keyset` = %s', $this->quote($key)),
-				sprintf( '`keyset_type` = %s', $this->quote(config::keyset_management))
+				sprintf('`keyset_type` = %s', $this->quote(config::keyset_management))
 			];
 
-			if ( !$archived) $where[] = 'archived = 0';
+			if (!$archived) $where[] = 'archived = 0';
 
 			$sql = sprintf(
 				'SELECT * FROM `%s` WHERE %s',
 				$this->db_name(),
-				implode( ' AND ', $where)
+				implode(' AND ', $where)
 			);
 
 			if ($res = $this->Result($sql)) {
@@ -229,8 +229,13 @@ class keyregister extends _dao {
 		return [];
 	}
 
-	public function getKeysForProperty(int $id = 0): array {
+	public function getKeysForProperty(int $id = 0, int $archived = 0): array {
 		if ($id) {
+			$where = [
+				sprintf('k.`properties_id` = %d', $id)
+			];
+			if ( ! $archived) $where[] = 'k.`archived` = 0';
+
 			$sql = sprintf(
 				'SELECT
 				k.*,
@@ -253,8 +258,7 @@ class keyregister extends _dao {
 				$this->quote('issued'),
 				$this->quote('return'),
 				$this->quote('returned'),
-				$id
-
+				implode(' AND ', $where)
 			);
 
 			if ($res = $this->Result($sql)) {
