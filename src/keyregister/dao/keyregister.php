@@ -23,7 +23,11 @@ class keyregister extends _dao {
 
 	public function freeset(): array {
 		$a = [];
-		for ($i = 100; $i < 1000; $i++) {
+		/**
+		 * 2022-05-31 : /forum/view/9795
+		 * corina says it starts at 1, I thought 100 ..
+		 **/
+		for ($i = 1; $i < 1000; $i++) {
 			$a[] = (string)$i;
 		}
 
