@@ -10,9 +10,9 @@
 
 namespace cms\keyregister\dao\dto;
 
-use dvc\dao\dto\_dto;
+use bravedave\dvc\dto;
 
-class keyregister extends _dto {
+class keyregister extends dto {
 	public $id = 0;
 
 	public $keyset = '';
