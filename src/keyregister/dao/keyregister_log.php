@@ -10,9 +10,9 @@
 
 namespace cms\keyregister\dao;
 
-use dvc\dao\_dao;
+use bravedave\dvc\dao;
 
-class keyregister_log extends _dao {
+class keyregister_log extends dao {
 	protected $_db_name = 'keyregister_log';
 
 	public function getForID( int $id) {

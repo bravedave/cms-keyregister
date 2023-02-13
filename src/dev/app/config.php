@@ -8,7 +8,7 @@
  *
 */
 
-class config extends dvc\config {
+class config extends bravedave\dvc\config {
   public static function cmsStore() {
     return self::dataPath();
   }

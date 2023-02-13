@@ -232,8 +232,11 @@ class controller extends \Controller {
           Json::ack($action)
             ->add('data', $dto);
         } else {
+
+          // https://cmss.darcy.com.au/forum/view/11042
+          // changed - was 0, now false
           Json::ack($action)
-            ->add('data', 0);
+            ->add('data', false);
         }
       } else {
         Json::nak($action);

@@ -19,16 +19,9 @@ class dbinfo extends \dao\_dbinfo {
 	 * from there store you structure files in <application>/dao/db folder
 	 */
 	protected function check() {
+
 		parent::check();
-
-		sys::logger('checking ' . dirname(__FILE__) . '/db/*.php');
-
-		if (glob(dirname(__FILE__) . '/db/*.php')) {
-			foreach (glob(dirname(__FILE__) . '/db/*.php') as $f) {
-				sys::logger('checking => ' . $f);
-				include_once $f;
-			}
-		}
+		parent::checkDIR(__DIR__);
 	}
 
 	public function setVersion(string $key, float $version): void {

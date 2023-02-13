@@ -13,11 +13,11 @@ namespace cms\keyregister\dao;
 use cms\keyregister\config;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
-use dvc\dao\_dao;
+use bravedave\dvc\dao;
 use db;
 use ParseCsv;
 
-class keyregister extends _dao {
+class keyregister extends dao {
 	protected $_db_name = 'keyregister';
 	protected $template = __NAMESPACE__ . '\dto\keyregister';
 
